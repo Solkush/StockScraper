@@ -1,4 +1,5 @@
-import requests
+import requests, pandas, lxml
+from lxml import html
 from bs4 import BeautifulSoup
 import datetime
 import time
@@ -12,9 +13,10 @@ ticker = input("Ticker: ").upper()
 
 URL = f'https://finance.yahoo.com/quote/{ticker}/history?period1={startEpoch}&period2={endEpoch}&interval=1d&filter=history&frequency=1d'
 page = requests.get(URL)
-print(URL)
-html_doc = """<table class="W(100%) M(0)" data-test="historical-prices">"""
-soup = BeautifulSoup(html_doc, "html.parser")
-# results = soup.find()
+element_html = html.fromstring(page.content)
+table = element_html.xpath('//table')
+table_tree = lxml.etree.tostring(table[0], method='xml')
+panda = pandas.read_html(table_tree)
+print(table_tree)
 
 
